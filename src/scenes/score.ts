@@ -5,18 +5,15 @@ interface arrNumber {
   sX: number;
   cX: number;
 }
-export class Score extends imageObject {
+abstract class _score extends imageObject {
   value: number;
-  isMaxScore: boolean;
   arrNumber: Array<arrNumber>;
-
-  constructor(cX: number, cY: number, isMaxScore: boolean) {
+  constructor(cX: number, cY: number) {
     super();
-    this.value = 0;
     this.cX = cX;
     this.cY = cY;
-    this.isMaxScore = isMaxScore;
-    this.arrNumber = [
+    this.value = 0;
+    this.arrNumber = this.arrNumber = [
       {
         name: "0",
         sX: 952,
@@ -44,6 +41,30 @@ export class Score extends imageObject {
       },
     ];
   }
+  abstract draw(ctx: CanvasRenderingContext2D): void;
+  abstract update(value?: number): void;
+  updateArrNumber() {
+    let splitValue = this.value.toString().split("");
+    let lengthSplit = splitValue.length;
+    for (let i = 0; i < 5 - lengthSplit; i++) {
+      this.arrNumber[i].sX = 952;
+      this.arrNumber[i].name = "0";
+    }
+    for (let i = 5 - lengthSplit; i < 5; i++) {
+      if (this.arrNumber[i].name !== splitValue[-5 + (i + lengthSplit)]) {
+        this.arrNumber[i].name = splitValue[i + 1 - lengthSplit];
+        this.arrNumber[i].sX =
+          952 + 20 * parseInt(splitValue[-5 + (i + lengthSplit)]);
+      }
+    }
+  }
+}
+export class Score extends _score {
+  timer: number;
+  constructor(cX: number, cY: number) {
+    super(cX, cY);
+    this.timer = 0;
+  }
   draw(ctx: CanvasRenderingContext2D) {
     this.arrNumber.forEach((_e) => {
       ctx.drawImage(
@@ -58,39 +79,49 @@ export class Score extends imageObject {
         15
       );
     });
-    if (this.isMaxScore) {
+  }
+  update() {
+    this.timer++;
+    if (this.timer > 5) {
+      this.value++;
+      this.timer = 0;
+    }
+    this.updateArrNumber();
+  }
+}
+
+export class maxScore extends _score {
+  constructor(cX: number, cY: number) {
+    super(cX, cY);
+  }
+  draw(ctx: CanvasRenderingContext2D) {
+    this.arrNumber.forEach((_e) => {
       ctx.drawImage(
         this.imageSprites,
-        1152,
+        _e.sX,
         0,
-        40,
+        20,
         25,
-        this.cX - 40,
+        _e.cX,
         this.cY,
-        30,
+        15,
         15
       );
-    }
+    });
+    ctx.drawImage(
+      this.imageSprites,
+      1152,
+      0,
+      40,
+      25,
+      this.cX - 40,
+      this.cY,
+      30,
+      15
+    );
   }
-  update(delta: number) {
-    if (this.isMaxScore) {
-      this.value = delta;
-    }
-    if (delta < 200 && !this.isMaxScore) {
-      this.value += Math.round(delta / 34);
-    }
-    let splitValue = this.value.toString().split("");
-    let lengthSplit = splitValue.length;
-    for (let i = 0; i < 5 - lengthSplit; i++) {
-      this.arrNumber[i].sX = 952;
-      this.arrNumber[i].name = "0";
-    }
-    for (let i = 5 - lengthSplit; i < 5; i++) {
-      if (this.arrNumber[i].name !== splitValue[-5 + (i + lengthSplit)]) {
-        this.arrNumber[i].name = splitValue[i + 1 - lengthSplit];
-        this.arrNumber[i].sX =
-          952 + 20 * parseInt(splitValue[-5 + (i + lengthSplit)]);
-      }
-    }
+  update(maxScore: number) {
+    this.value = maxScore;
+    this.updateArrNumber();
   }
 }

@@ -33,7 +33,7 @@ export class Player extends imageObject {
     this.sW = 95;
     this.sH = 110;
 
-    this.msPerSecond = { run: 1000 / 60, jump: 1000 / 60, duck: 1000 / 60 };
+    this.msPerSecond = { run: 10, jump: 1000 / 60, duck: 1000 / 60 };
     this.frames_run = [1511, 1599];
     this.frames_jump = [1335];
     this.frames_duck = [1862, 1982];
@@ -61,12 +61,14 @@ export class Player extends imageObject {
     this.sH = 90;
     this.cW = 70;
     this.cH = 58;
+    this.cY = 320;
   }
   setPositionOther() {
     this.sH = 110;
     this.sW = 95;
     this.cW = 60;
     this.cH = 70;
+    this.cY = 315;
   }
   update() {
     this.timer++;
@@ -103,22 +105,10 @@ export class Player extends imageObject {
         this.isDrop = false;
         this.jumpVelocity = -13;
       }
-
-      /*if (!this.isDrop) {
-        if (this.cY <= 210) this.isDrop = true;
-        this.jumpVelocity += this.gravity * (delta / (1000 / 60));
-        this.cY += this.jumpVelocity;
-      } else {
-        if (this.cY >= 315) {
-          this.cY = 315;
-          this.status = status_run;
-          this.isDrop = false;
-          this.jumpVelocity = -10;
-        }
-        
-        this.jumpVelocity += this.gravity * (delta / (1000 / 60));
-        this.cY += this.jumpVelocity;
-      }*/
     }
+  }
+  reset() {
+    this.setPositionOther();
+    this.status = status_run;
   }
 }

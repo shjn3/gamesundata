@@ -15,7 +15,7 @@ import {
 import { Ground } from "./outside/ground";
 import { Start } from "./scenes/start";
 import { Player } from "./Player/dino";
-import { Score } from "./scenes/score";
+import { maxScore, Score } from "./scenes/score";
 import { Cloud } from "./outside/cloud";
 import { vector } from "./utilities/types";
 import { Obstacles } from "./obstacles/obstacles";
@@ -37,17 +37,19 @@ export class Game {
   playStart: Start;
   dino: Player;
   score: Score;
-  maxScore: Score;
+  maxScore: maxScore;
   cactus: Obstacles;
   over: gameOver;
+  vX: number;
 
   constructor(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
+    this.vX = -4;
     this.over = new gameOver();
-    this.cactus = new Obstacles();
+    this.cactus = new Obstacles(this.vX);
     this.playStart = new Start();
     this.dino = new Player();
-    this.score = new Score(canvas.width - 100, 20, false);
-    this.maxScore = new Score(canvas.width - 250, 20, true);
+    this.score = new Score(canvas.width - 100, 20);
+    this.maxScore = new maxScore(canvas.width - 250, 20);
     this.ctx = ctx;
     this.canvas = canvas;
     this.gameStatus = play;
@@ -141,10 +143,10 @@ export class Game {
       //draw Score
       this.score.draw(this.ctx);
       this.maxScore.draw(this.ctx);
-      //draw obstacles
-      this.cactus.draw(this.ctx);
       //draw Dino
       this.dino.draw(this.ctx, this.canvas);
+      //draw obstacles
+      this.cactus.draw(this.ctx);
 
       if (this.gameStatus === end) {
         this.over.draw(this.ctx, this.canvas);
@@ -163,7 +165,8 @@ export class Game {
         let ground = new Ground(
           this.arrGround[0].cX + this.canvas.width * 2,
           346,
-          this.canvas.width
+          this.canvas.width,
+          this.vX
         );
         this.arrGround.push(ground);
       }
@@ -181,7 +184,7 @@ export class Game {
       //update Player.
       this.dino.update();
       //update score
-      this.score.update(delta);
+      this.score.update();
       //update obstacles
       this.cactus.update();
       this.distanceMeasure();
@@ -196,7 +199,8 @@ export class Game {
       let ground = new Ground(
         i * this.canvas.width * 2,
         346,
-        this.canvas.width
+        this.canvas.width,
+        this.vX
       );
       this.arrGround.push(ground);
     }
@@ -208,16 +212,49 @@ export class Game {
     }
   }
   distanceMeasure() {
-    if (
-      this.dino.cX + 25 >= this.cactus.cX &&
-      this.dino.cX + 25 <= this.cactus.cX + 35 &&
-      this.dino.cY + 40 >= this.cactus.cY
-    ) {
-      this.gameStatus = end;
+    if (this.dino.status !== status_jump) {
+      if (
+        this.dino.cX + this.dino.cW >= this.cactus.cX &&
+        this.dino.cX + this.dino.cW <= this.cactus.cX + this.cactus.cW &&
+        this.dino.cY >= this.cactus.cY &&
+        this.dino.cY <= this.cactus.cY + this.cactus.cH
+      )
+        this.gameStatus = end;
+    } else {
+      console.log(this.dino.cX);
+      console.log(this.dino.cW + this.dino.cX);
+      console.log(this.cactus.cX);
+      console.log(this.cactus.cX + this.cactus.cW);
+      console.log("abc");
+      console.log(this.dino.cY + this.dino.cH);
+      console.log(this.cactus.cY);
+      console.log(this.cactus.cY + this.cactus.cH);
+      console.log("condition");
+      console.log(this.dino.cX >= this.cactus.cX);
+      console.log(this.dino.cX <= this.cactus.cX + this.cactus.cW);
+      console.log(this.dino.cX + this.dino.cW >= this.cactus.cX);
+      console.log(
+        this.dino.cX + this.dino.cW <= this.cactus.cX + this.cactus.cW
+      );
+      console.log(this.dino.cY + this.dino.cH >= this.cactus.cY);
+      console.log(
+        this.dino.cY + this.dino.cH <= this.cactus.cY + this.cactus.cH
+      );
+
+      if (
+        ((this.dino.cX >= this.cactus.cX &&
+          this.dino.cX <= this.cactus.cX + this.cactus.cW) ||
+          (this.dino.cX + this.dino.cW >= this.cactus.cX &&
+            this.dino.cX + this.dino.cW <= this.cactus.cX + this.cactus.cW)) &&
+        this.dino.cY + this.dino.cH >= this.cactus.cY &&
+        this.dino.cY + this.dino.cH <= this.cactus.cY + this.cactus.cH
+      )
+        this.gameStatus = end;
     }
   }
   reset() {
     this.score.value = 0;
     this.cactus.cX = 300;
+    this.dino.reset();
   }
 }

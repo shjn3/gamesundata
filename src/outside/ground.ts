@@ -2,7 +2,7 @@ import { imageObject } from "../base/image";
 
 export class Ground extends imageObject {
   vX: number;
-  constructor(cX: number, cY: number, canvasWidth: number) {
+  constructor(cX: number, cY: number, canvasWidth: number, vX: number) {
     super();
     this.sX = 0;
     this.sY = 100;
@@ -12,7 +12,7 @@ export class Ground extends imageObject {
     this.cY = cY;
     this.cW = canvasWidth * 2;
     this.cH = 30;
-    this.vX = -2;
+    this.vX = vX;
   }
   draw(ctx: CanvasRenderingContext2D) {
     ctx.beginPath();

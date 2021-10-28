@@ -5,6 +5,7 @@ let arrCactus = {
       cY: 290,
       cW: 40,
       cH: 80,
+
       sY: 0,
       sW: 40,
       sH: 80,
@@ -14,6 +15,7 @@ let arrCactus = {
       cY: 290,
       cW: 100,
       cH: 80,
+
       sY: 0,
       sW: 100,
       sH: 90,
@@ -24,6 +26,7 @@ let arrCactus = {
     cY: 310,
     cW: 35,
     cH: 60,
+
     sY: 0,
     sW: 34,
     sH: 70,
@@ -43,11 +46,15 @@ let arrBird = {
 };
 export class Obstacles extends imageObject {
   timer: number;
-  constructor() {
+  vX: number;
+  constructor(vX: number) {
     super();
     this.timer = 0;
     this.cX = 300;
-    this.cY = 310;
+    this.cY = 255;
+    this.cW = 35;
+    this.cH = 60;
+    this.vX = vX;
   }
   draw(ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
@@ -64,6 +71,9 @@ export class Obstacles extends imageObject {
     );
   }
   update() {
-    this.cX -= 1;
+    if (this.cX + 35 < 0) {
+      this.cX = 400;
+    }
+    this.cX += this.vX;
   }
 }
