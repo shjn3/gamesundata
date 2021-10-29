@@ -78,7 +78,7 @@ export class Game implements _game {
     this.canvas = canvas;
 
     this.vX = -4;
-    this.gameStatus = play;
+    this.gameStatus = start;
     this.max_cloud = 4;
     this.maxObstacles = 2;
     this.timePrev = 0;
@@ -109,8 +109,8 @@ export class Game implements _game {
             event.offsetY < this.canvas.height / 2 + 50
           ) {
             this.gameStatus = play;
-            this.reset();
           }
+          this.reset();
           this.timePrev = Date.now();
           this.timeCurrent = Date.now();
           break;
@@ -263,26 +263,13 @@ export class Game implements _game {
     }
   }
   distanceMeasure(_obstacles: Obstacles) {
-    if (this.dino.status !== status_jump) {
-      if (
-        this.dino.cX + this.dino.cW >= _obstacles.cX &&
-        this.dino.cX + this.dino.cW <= _obstacles.cX + _obstacles.cW &&
-        ((this.dino.cY >= _obstacles.cY &&
-          this.dino.cY <= _obstacles.cY + _obstacles.cH) ||
-          (this.dino.cY + this.dino.cH >= _obstacles.cY &&
-            this.dino.cY + this.dino.cH <= _obstacles.cY + _obstacles.cH))
-      )
-        this.gameStatus = end;
-    } else {
-      if (
-        ((this.dino.cX >= _obstacles.cX &&
-          this.dino.cX <= _obstacles.cX + _obstacles.cW) ||
-          (this.dino.cX + this.dino.cW >= _obstacles.cX &&
-            this.dino.cX + this.dino.cW <= _obstacles.cX + _obstacles.cW)) &&
-        this.dino.cY + this.dino.cH >= _obstacles.cY &&
-        this.dino.cY + this.dino.cH <= _obstacles.cY + _obstacles.cH
-      )
-        this.gameStatus = end;
+    if (
+      this.dino.cX < _obstacles.cX + _obstacles.cW &&
+      this.dino.cX + this.dino.cW > _obstacles.cX &&
+      this.dino.cY < _obstacles.cY + _obstacles.cH &&
+      this.dino.cY + this.dino.cH > _obstacles.cY
+    ) {
+      this.gameStatus = end;
     }
   }
   reset() {
@@ -290,7 +277,7 @@ export class Game implements _game {
     this.dino.reset();
     this.arrCloud = [];
     this.arrObstacles = [];
-    this.arrGround = [];
-    this.init();
+    this.addNewCloud();
+    this.addNewObstacles();
   }
 }

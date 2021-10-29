@@ -18,14 +18,14 @@ export class Obstacles extends imageObject {
   constructor(canvas: HTMLCanvasElement, vX: number) {
     super();
     Object.setPrototypeOf(this, Obstacles.prototype);
-    //this.type = getRandomNumber(0, 3);
-    this.type = 0;
+    this.type = getRandomNumber(0, 3);
+    //this.type = 3;
     this.timer = 0;
     this.gap = 250;
     this.cX = canvas.width;
     this.vX = vX;
     this.arrTypePterodactyl = {
-      cY: 285,
+      cY: 290,
       cW: 50,
       cH: 30,
       gap: 300,

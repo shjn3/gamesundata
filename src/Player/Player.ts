@@ -114,7 +114,7 @@ export class Player extends imageObject implements _player {
       if (this.cY > 315) {
         this.cY = 315;
         this.status = status_run;
-        this.jumpVelocity = -13;
+        this.jumpVelocity = -15;
       }
     }
   }
