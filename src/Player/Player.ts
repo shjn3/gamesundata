@@ -1,44 +1,54 @@
 import { status_run, status_jump, status_duck } from "../utilities/config";
-import { imageObject } from "../base/image";
+import { imageObject } from "../base/imageObject";
 
 interface fpsPlayer {
-  run: number;
-  jump: number;
-  duck: number;
+  run: number; //fps when Player run
+  jump: number; // fps when player jump
+  duck: number; // fps when player duck
 }
-
-export class Player extends imageObject {
+interface _player {
+  status: number; // 3 status : run, jump, duck
+  msPerSecond: fpsPlayer; // fps
+  frames_run: Array<number>; // use create animation when player run
+  frames_jump: Array<number>; //  use create animation when player jump
+  frames_duck: Array<number>; // use create animation when player duck
+  timer: number; // count time for crate animation
+  jumpVelocity: number; // velocity when player jump
+  gravity: number; // gravity use for player when player jump
+  draw(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement): void; //draw object on the canvas
+  setPositionDuck(): void; //set position, size on canvas, source Image when player duck
+  setPositionOther(): void; //set position, size on canvas, source Image when player run, jump
+  update(): void; // update property for objects
+  reset(): void; //constructor again
+}
+export class Player extends imageObject implements _player {
   status: number;
-  sX: number;
-  sY: number;
-  sW: number;
-  sH: number;
   msPerSecond: fpsPlayer;
   frames_run: Array<number>;
   frames_jump: Array<number>;
   frames_duck: Array<number>;
   timer: number;
-  isDrop: boolean;
   jumpVelocity: number;
   gravity: number;
   constructor() {
     super();
+    Object.setPrototypeOf(this, Player.prototype);
+
     this.cX = 15;
     this.cY = 315;
     this.cW = 60;
     this.cH = 70;
-    this.status = status_run;
     this.sX = 1511;
     this.sY = 0;
     this.sW = 95;
     this.sH = 110;
 
+    this.status = status_run;
     this.msPerSecond = { run: 10, jump: 1000 / 60, duck: 1000 / 60 };
     this.frames_run = [1511, 1599];
     this.frames_jump = [1335];
     this.frames_duck = [1862, 1982];
     this.timer = 0;
-    this.isDrop = false;
     this.jumpVelocity = -13;
     this.gravity = 0.5;
   }
@@ -102,7 +112,6 @@ export class Player extends imageObject {
       if (this.cY > 315) {
         this.cY = 315;
         this.status = status_run;
-        this.isDrop = false;
         this.jumpVelocity = -13;
       }
     }

@@ -1,9 +1,15 @@
-import { imageObject } from "../base/image";
+import { imageObject } from "../base/imageObject";
 
-export class Ground extends imageObject {
+interface _ground {
+  vX: number; //velocity when ground move right to left;
+  draw(ctx: CanvasRenderingContext2D): void; //draw ground on canvas
+}
+
+export class Ground extends imageObject implements _ground {
   vX: number;
   constructor(cX: number, cY: number, canvasWidth: number, vX: number) {
     super();
+    Object.setPrototypeOf(this, Ground.prototype);
     this.sX = 0;
     this.sY = 100;
     this.sW = 2400;

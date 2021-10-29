@@ -1,9 +1,15 @@
-import { imageObject } from "../base/image";
+import { imageObject } from "../base/imageObject";
 
-export class Cloud extends imageObject {
+interface _cloud {
+  vX: number; //velocity when cloud move right to left
+  draw(ctx: CanvasRenderingContext2D): void; //draw cloud on canvas
+}
+
+export class Cloud extends imageObject implements _cloud {
   vX: number;
   constructor(cX: number, cY: number) {
     super();
+    Object.setPrototypeOf(this, Cloud.prototype);
     this.sX = 165;
     this.sY = 0;
     this.sW = 100;

@@ -1,16 +1,20 @@
 import { canvasHeight, canvasWidth } from "./utilities/config";
-import { Game } from "./game";
+import { Game } from "./Game";
 
-const canvas = <HTMLCanvasElement>document.getElementById("canvas");
-const ctx = <CanvasRenderingContext2D>canvas.getContext("2d");
+const canvas: HTMLCanvasElement = <HTMLCanvasElement>(
+  document.getElementById("canvas")
+);
+const ctx: CanvasRenderingContext2D = <CanvasRenderingContext2D>(
+  canvas.getContext("2d")
+);
 canvas.height = canvasHeight;
 canvas.width = canvasWidth;
-const fpt = 60;
-const msPerSecond = 1000 / 60;
+const fps: number = 60;
+const msPerSecond: number = 1000 / fps;
 
-const game = new Game(ctx, canvas);
+const game: Game = new Game(ctx, canvas);
 
-function animation() {
+function animation(): void {
   setTimeout(() => {
     window.requestAnimationFrame(animation);
   }, msPerSecond);

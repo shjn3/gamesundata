@@ -1,5 +1,4 @@
 import {
-  canvasHeight,
   canvasWidth,
   start,
   play,
@@ -12,16 +11,45 @@ import {
   status_jump,
 } from "./utilities/config";
 
-import { Ground } from "./outside/ground";
-import { Start } from "./scenes/start";
-import { Player } from "./Player/dino";
-import { maxScore, Score } from "./scenes/score";
-import { Cloud } from "./outside/cloud";
+import { Ground } from "./outside/Ground";
+import { gameStart } from "./scenes/gameStart";
+import { Player } from "./Player/Player";
+import { Score } from "./scenes/Score";
+import { maxScore } from "./scenes/maxScore";
+import { Cloud } from "./outside/Cloud";
 import { vector } from "./utilities/types";
 import { Obstacles } from "./obstacles/obstacles";
 import { gameOver } from "./scenes/gameOver";
 
-export class Game {
+interface _game {
+  ctx: CanvasRenderingContext2D;
+  canvas: HTMLCanvasElement;
+
+  timePrev: number;
+  timeCurrent: number;
+
+  gameStatus: number; //status game: start, play, end
+
+  frames_cloud: Array<vector>;
+  arrGround: Array<Ground>;
+  arrCloud: Array<Cloud>;
+  arrObstacles: Array<Obstacles>;
+  game_start: gameStart;
+  dino: Player;
+  score: Score;
+  maxScore: maxScore;
+  game_over: gameOver;
+  vX: number; //velocity when move right to left
+  init(): void; //initialization
+  draw(): void; //draw objects on canvas
+  update(): void; //update objects
+  createArrGround(): void; //create many cloud
+  createArrCloud(): void; // create many ground
+  distanceMeasure(): void; // measure distance player with obstacles
+  reset(): void; // reset when game over.
+}
+
+export class Game implements _game {
   ctx: CanvasRenderingContext2D;
   canvas: HTMLCanvasElement;
 
@@ -30,30 +58,28 @@ export class Game {
 
   gameStatus: number;
 
-  frame_cloud: Array<vector>;
+  frames_cloud: Array<vector>;
   arrGround: Array<Ground>;
   arrCloud: Array<Cloud>;
   arrObstacles: Array<Obstacles>;
-  playStart: Start;
+  game_start: gameStart;
   dino: Player;
   score: Score;
   maxScore: maxScore;
-  cactus: Obstacles;
-  over: gameOver;
+  game_over: gameOver;
   vX: number;
 
   constructor(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
     this.vX = -4;
-    this.over = new gameOver();
-    this.cactus = new Obstacles(this.vX);
-    this.playStart = new Start();
+    this.game_over = new gameOver();
+    this.game_start = new gameStart();
     this.dino = new Player();
     this.score = new Score(canvas.width - 100, 20);
     this.maxScore = new maxScore(canvas.width - 250, 20);
     this.ctx = ctx;
     this.canvas = canvas;
     this.gameStatus = play;
-    this.frame_cloud = [
+    this.frames_cloud = [
       {
         x: canvas.width,
         y: 30,
@@ -134,7 +160,7 @@ export class Game {
   }
   draw() {
     if (this.gameStatus === start) {
-      this.playStart.draw(this.ctx, this.canvas);
+      this.game_start.draw(this.ctx, this.canvas);
     } else {
       //draw arrGround
       this.arrGround.forEach((_e) => _e.draw(this.ctx));
@@ -146,10 +172,9 @@ export class Game {
       //draw Dino
       this.dino.draw(this.ctx, this.canvas);
       //draw obstacles
-      this.cactus.draw(this.ctx);
 
       if (this.gameStatus === end) {
-        this.over.draw(this.ctx, this.canvas);
+        this.game_over.draw(this.ctx, this.canvas);
       }
     }
   }
@@ -176,8 +201,8 @@ export class Game {
         this.arrCloud.splice(0, 1);
         let idSelectCloud = Math.round(Math.random() * 3);
         let cloud = new Cloud(
-          this.frame_cloud[idSelectCloud].x,
-          this.frame_cloud[idSelectCloud].y
+          this.frames_cloud[idSelectCloud].x,
+          this.frames_cloud[idSelectCloud].y
         );
         this.arrCloud.push(cloud);
       }
@@ -186,7 +211,7 @@ export class Game {
       //update score
       this.score.update();
       //update obstacles
-      this.cactus.update();
+
       this.distanceMeasure();
     }
     if (this.gameStatus === end) {
@@ -207,12 +232,12 @@ export class Game {
   }
   createArrCloud() {
     for (let i = 0; i < 4; i++) {
-      let cloud = new Cloud(this.frame_cloud[i].x, this.frame_cloud[i].y);
+      let cloud = new Cloud(this.frames_cloud[i].x, this.frames_cloud[i].y);
       this.arrCloud.push(cloud);
     }
   }
   distanceMeasure() {
-    if (this.dino.status !== status_jump) {
+    /*if (this.dino.status !== status_jump) {
       if (
         this.dino.cX + this.dino.cW >= this.cactus.cX &&
         this.dino.cX + this.dino.cW <= this.cactus.cX + this.cactus.cW &&
@@ -221,26 +246,6 @@ export class Game {
       )
         this.gameStatus = end;
     } else {
-      console.log(this.dino.cX);
-      console.log(this.dino.cW + this.dino.cX);
-      console.log(this.cactus.cX);
-      console.log(this.cactus.cX + this.cactus.cW);
-      console.log("abc");
-      console.log(this.dino.cY + this.dino.cH);
-      console.log(this.cactus.cY);
-      console.log(this.cactus.cY + this.cactus.cH);
-      console.log("condition");
-      console.log(this.dino.cX >= this.cactus.cX);
-      console.log(this.dino.cX <= this.cactus.cX + this.cactus.cW);
-      console.log(this.dino.cX + this.dino.cW >= this.cactus.cX);
-      console.log(
-        this.dino.cX + this.dino.cW <= this.cactus.cX + this.cactus.cW
-      );
-      console.log(this.dino.cY + this.dino.cH >= this.cactus.cY);
-      console.log(
-        this.dino.cY + this.dino.cH <= this.cactus.cY + this.cactus.cH
-      );
-
       if (
         ((this.dino.cX >= this.cactus.cX &&
           this.dino.cX <= this.cactus.cX + this.cactus.cW) ||
@@ -250,11 +255,10 @@ export class Game {
         this.dino.cY + this.dino.cH <= this.cactus.cY + this.cactus.cH
       )
         this.gameStatus = end;
-    }
+    }*/
   }
   reset() {
     this.score.value = 0;
-    this.cactus.cX = 300;
     this.dino.reset();
   }
 }

@@ -1,9 +1,10 @@
-import { imageObject } from "../base/image";
+import { imageObject } from "../base/imageObject";
 
-export class Start extends imageObject {
-  imgBtnStart: HTMLImageElement = new Image();
+export class gameStart extends imageObject {
+  imgBtnStart: HTMLImageElement = new Image(); // image button start
   constructor() {
     super();
+    Object.setPrototypeOf(this, gameStart.prototype);
     this.imgBtnStart.src = "./image/Scenes/PlayButton.png";
   }
   draw(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {

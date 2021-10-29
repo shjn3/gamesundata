@@ -1,15 +1,17 @@
-import { imageObject } from "../base/image";
+import { imageObject } from "../base/imageObject";
 
 interface arrNumber {
-  name: string;
-  sX: number;
-  cX: number;
+  name: string; // value number: 0, 1, ,2 ,3 ,4, 5, 6, 7, 8, 9.
+  sX: number; // position X of object on source image
+  cX: number; // position X of object on canvas
 }
-abstract class _score extends imageObject {
+export abstract class scoreObject extends imageObject {
   value: number;
   arrNumber: Array<arrNumber>;
   constructor(cX: number, cY: number) {
     super();
+    Object.setPrototypeOf(this, scoreObject.prototype);
+
     this.cX = cX;
     this.cY = cY;
     this.value = 0;
@@ -42,8 +44,7 @@ abstract class _score extends imageObject {
     ];
   }
   abstract draw(ctx: CanvasRenderingContext2D): void;
-  abstract update(value?: number): void;
-  updateArrNumber() {
+  update(value?: number) {
     let splitValue = this.value.toString().split("");
     let lengthSplit = splitValue.length;
     for (let i = 0; i < 5 - lengthSplit; i++) {
@@ -59,10 +60,11 @@ abstract class _score extends imageObject {
     }
   }
 }
-export class Score extends _score {
+export class Score extends scoreObject {
   timer: number;
   constructor(cX: number, cY: number) {
     super(cX, cY);
+    Object.setPrototypeOf(this, Score.prototype);
     this.timer = 0;
   }
   draw(ctx: CanvasRenderingContext2D) {
@@ -86,42 +88,6 @@ export class Score extends _score {
       this.value++;
       this.timer = 0;
     }
-    this.updateArrNumber();
-  }
-}
-
-export class maxScore extends _score {
-  constructor(cX: number, cY: number) {
-    super(cX, cY);
-  }
-  draw(ctx: CanvasRenderingContext2D) {
-    this.arrNumber.forEach((_e) => {
-      ctx.drawImage(
-        this.imageSprites,
-        _e.sX,
-        0,
-        20,
-        25,
-        _e.cX,
-        this.cY,
-        15,
-        15
-      );
-    });
-    ctx.drawImage(
-      this.imageSprites,
-      1152,
-      0,
-      40,
-      25,
-      this.cX - 40,
-      this.cY,
-      30,
-      15
-    );
-  }
-  update(maxScore: number) {
-    this.value = maxScore;
-    this.updateArrNumber();
+    super.update();
   }
 }

@@ -1,4 +1,4 @@
-import { imageObject } from "../base/image";
+import { imageObject } from "../base/imageObject";
 let arrCactus = {
   large: {
     one: {
@@ -49,6 +49,7 @@ export class Obstacles extends imageObject {
   vX: number;
   constructor(vX: number) {
     super();
+    Object.setPrototypeOf(this, Obstacles.prototype);
     this.timer = 0;
     this.cX = 300;
     this.cY = 255;

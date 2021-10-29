@@ -1,9 +1,13 @@
-import { imageObject } from "../base/image";
-import { canvasWidth } from "../utilities/config";
+import { imageObject } from "../base/imageObject";
 
-export class gameOver extends imageObject {
+interface _gameOver {
+  draw(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement): void; //draw canvas when game end
+}
+
+export class gameOver extends imageObject implements _gameOver {
   constructor() {
     super();
+    Object.setPrototypeOf(this, gameOver.prototype);
   }
   draw(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
     ctx.drawImage(
