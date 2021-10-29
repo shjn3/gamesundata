@@ -17,7 +17,6 @@ import { Player } from "./Player/Player";
 import { Score } from "./scenes/Score";
 import { maxScore } from "./scenes/maxScore";
 import { Cloud } from "./outside/Cloud";
-import { vector } from "./utilities/types";
 import { Obstacles } from "./obstacles/obstacles";
 import { gameOver } from "./scenes/gameOver";
 
@@ -30,7 +29,6 @@ interface _game {
 
   gameStatus: number; //status game: start, play, end
 
-  frames_cloud: Array<vector>;
   arrGround: Array<Ground>;
   arrCloud: Array<Cloud>;
   arrObstacles: Array<Obstacles>;
@@ -40,12 +38,18 @@ interface _game {
   maxScore: maxScore;
   game_over: gameOver;
   vX: number; //velocity when move right to left
+  max_cloud: number;
+  maxObstacles: number;
   init(): void; //initialization
   draw(): void; //draw objects on canvas
   update(): void; //update objects
   createArrGround(): void; //create many cloud
-  createArrCloud(): void; // create many ground
-  distanceMeasure(): void; // measure distance player with obstacles
+  updateArrGround(): void;
+  updateArrCloud(): void;
+  addNewCloud(): void;
+  updateObstacles(): void;
+
+  distanceMeasure(a: Obstacles): void; // measure distance player with obstacles
   reset(): void; // reset when game over.
 }
 
@@ -57,8 +61,6 @@ export class Game implements _game {
   timeCurrent: number;
 
   gameStatus: number;
-
-  frames_cloud: Array<vector>;
   arrGround: Array<Ground>;
   arrCloud: Array<Cloud>;
   arrObstacles: Array<Obstacles>;
@@ -66,47 +68,36 @@ export class Game implements _game {
   dino: Player;
   score: Score;
   maxScore: maxScore;
+  maxObstacles: number;
   game_over: gameOver;
   vX: number;
+  max_cloud: number;
 
   constructor(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
-    this.vX = -4;
-    this.game_over = new gameOver();
-    this.game_start = new gameStart();
-    this.dino = new Player();
-    this.score = new Score(canvas.width - 100, 20);
-    this.maxScore = new maxScore(canvas.width - 250, 20);
     this.ctx = ctx;
     this.canvas = canvas;
+
+    this.vX = -4;
     this.gameStatus = play;
-    this.frames_cloud = [
-      {
-        x: canvas.width,
-        y: 30,
-      },
-      {
-        x: canvas.width + 100,
-        y: 100,
-      },
-      {
-        x: canvas.width + 200,
-        y: 200,
-      },
-      {
-        x: canvas.width + 300,
-        y: 270,
-      },
-    ];
+    this.max_cloud = 4;
+    this.maxObstacles = 2;
     this.timePrev = 0;
     this.timeCurrent = Date.now();
     this.arrGround = [];
     this.arrCloud = [];
     this.arrObstacles = [];
+
+    this.game_over = new gameOver();
+    this.game_start = new gameStart();
+    this.dino = new Player();
+    this.score = new Score(canvas.width - 100, 20);
+    this.maxScore = new maxScore(canvas.width - 250, 20);
     this.init();
   }
   init() {
+    this.addNewCloud();
+    this.addNewObstacles();
     this.createArrGround();
-    this.createArrCloud();
     //event click
     this.canvas.addEventListener("click", (event) => {
       switch (this.gameStatus) {
@@ -172,6 +163,7 @@ export class Game implements _game {
       //draw Dino
       this.dino.draw(this.ctx, this.canvas);
       //draw obstacles
+      this.arrObstacles.forEach((_e) => _e.draw(this.ctx));
 
       if (this.gameStatus === end) {
         this.game_over.draw(this.ctx, this.canvas);
@@ -184,41 +176,81 @@ export class Game implements _game {
       this.timePrev = this.timeCurrent;
       this.timeCurrent = Date.now();
       //update array Ground
-      this.arrGround.forEach((_e) => (_e.cX += _e.vX));
-      if (this.arrGround[0].cX <= -canvasWidth * 2) {
-        this.arrGround.splice(0, 1);
-        let ground = new Ground(
-          this.arrGround[0].cX + this.canvas.width * 2,
-          346,
-          this.canvas.width,
-          this.vX
-        );
-        this.arrGround.push(ground);
-      }
+      this.updateArrGround();
       //update array cloud
-      this.arrCloud.forEach((_e) => (_e.cX += _e.vX));
-      if (this.arrCloud[0].cX + 200 < 0) {
-        this.arrCloud.splice(0, 1);
-        let idSelectCloud = Math.round(Math.random() * 3);
-        let cloud = new Cloud(
-          this.frames_cloud[idSelectCloud].x,
-          this.frames_cloud[idSelectCloud].y
-        );
-        this.arrCloud.push(cloud);
-      }
+      this.updateArrCloud();
       //update Player.
       this.dino.update();
       //update score
       this.score.update();
       //update obstacles
-
-      this.distanceMeasure();
+      this.updateObstacles();
     }
     if (this.gameStatus === end) {
       this.maxScore.update(Math.max(this.maxScore.value, this.score.value));
     }
   }
+  updateArrCloud() {
+    //update array cloud
+    let numberCloud = this.arrCloud.length;
+    if (numberCloud) {
+      this.arrCloud.forEach((_e) => (_e.cX += _e.vX));
+      if (
+        numberCloud <= this.max_cloud &&
+        this.canvas.width - this.arrCloud[numberCloud - 1].cX >
+          this.arrCloud[numberCloud - 1].gap
+      ) {
+        this.addNewCloud();
+      }
+      if (this.arrCloud[0].cX + 200 < 0) {
+        this.arrCloud.splice(0, 1);
+      }
+    }
+  }
+  addNewCloud() {
+    this.arrCloud.push(new Cloud(this.canvas.width));
+  }
 
+  updateObstacles() {
+    let lengthArrObstacles = this.arrObstacles.length;
+    if (lengthArrObstacles) {
+      this.arrObstacles.forEach((_e) => {
+        _e.cX += _e.vX;
+        if (_e.type === 3) _e.update();
+        // measure distance player with obstacles.
+      });
+      if (
+        lengthArrObstacles < this.maxObstacles &&
+        this.arrObstacles[lengthArrObstacles - 1].cX +
+          this.arrObstacles[lengthArrObstacles - 1].cW +
+          this.arrObstacles[lengthArrObstacles - 1].gap <
+          this.canvas.width
+      ) {
+        this.addNewObstacles();
+      }
+      this.distanceMeasure(this.arrObstacles[0]);
+      if (this.arrObstacles[0].cX + this.arrObstacles[0].cW < 0) {
+        this.arrObstacles.shift();
+      }
+    }
+  }
+  addNewObstacles() {
+    this.arrObstacles.push(new Obstacles(this.canvas, this.vX));
+  }
+
+  updateArrGround() {
+    this.arrGround.forEach((_e) => (_e.cX += _e.vX));
+    if (this.arrGround[0].cX <= -canvasWidth * 2) {
+      this.arrGround.splice(0, 1);
+      let ground = new Ground(
+        this.arrGround[0].cX + this.canvas.width * 2,
+        346,
+        this.canvas.width,
+        this.vX
+      );
+      this.arrGround.push(ground);
+    }
+  }
   createArrGround() {
     for (let i = 0; i < 3; i++) {
       let ground = new Ground(
@@ -230,35 +262,35 @@ export class Game implements _game {
       this.arrGround.push(ground);
     }
   }
-  createArrCloud() {
-    for (let i = 0; i < 4; i++) {
-      let cloud = new Cloud(this.frames_cloud[i].x, this.frames_cloud[i].y);
-      this.arrCloud.push(cloud);
-    }
-  }
-  distanceMeasure() {
-    /*if (this.dino.status !== status_jump) {
+  distanceMeasure(_obstacles: Obstacles) {
+    if (this.dino.status !== status_jump) {
       if (
-        this.dino.cX + this.dino.cW >= this.cactus.cX &&
-        this.dino.cX + this.dino.cW <= this.cactus.cX + this.cactus.cW &&
-        this.dino.cY >= this.cactus.cY &&
-        this.dino.cY <= this.cactus.cY + this.cactus.cH
+        this.dino.cX + this.dino.cW >= _obstacles.cX &&
+        this.dino.cX + this.dino.cW <= _obstacles.cX + _obstacles.cW &&
+        ((this.dino.cY >= _obstacles.cY &&
+          this.dino.cY <= _obstacles.cY + _obstacles.cH) ||
+          (this.dino.cY + this.dino.cH >= _obstacles.cY &&
+            this.dino.cY + this.dino.cH <= _obstacles.cY + _obstacles.cH))
       )
         this.gameStatus = end;
     } else {
       if (
-        ((this.dino.cX >= this.cactus.cX &&
-          this.dino.cX <= this.cactus.cX + this.cactus.cW) ||
-          (this.dino.cX + this.dino.cW >= this.cactus.cX &&
-            this.dino.cX + this.dino.cW <= this.cactus.cX + this.cactus.cW)) &&
-        this.dino.cY + this.dino.cH >= this.cactus.cY &&
-        this.dino.cY + this.dino.cH <= this.cactus.cY + this.cactus.cH
+        ((this.dino.cX >= _obstacles.cX &&
+          this.dino.cX <= _obstacles.cX + _obstacles.cW) ||
+          (this.dino.cX + this.dino.cW >= _obstacles.cX &&
+            this.dino.cX + this.dino.cW <= _obstacles.cX + _obstacles.cW)) &&
+        this.dino.cY + this.dino.cH >= _obstacles.cY &&
+        this.dino.cY + this.dino.cH <= _obstacles.cY + _obstacles.cH
       )
         this.gameStatus = end;
-    }*/
+    }
   }
   reset() {
     this.score.value = 0;
     this.dino.reset();
+    this.arrCloud = [];
+    this.arrObstacles = [];
+    this.arrGround = [];
+    this.init();
   }
 }

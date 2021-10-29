@@ -49,7 +49,7 @@ export class Player extends imageObject implements _player {
     this.frames_jump = [1335];
     this.frames_duck = [1862, 1982];
     this.timer = 0;
-    this.jumpVelocity = -13;
+    this.jumpVelocity = -15;
     this.gravity = 0.5;
   }
   draw(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
@@ -65,6 +65,8 @@ export class Player extends imageObject implements _player {
       this.cW,
       this.cH
     );
+    //ctx.drawImage(this.imageSprites, 252, 0, 90, 70, 400, 280, 70, 50);
+    //ctx.drawImage(this.imageSprites, 350, 0, 90, 70, 400, 280, 70, 50);
   }
   setPositionDuck() {
     this.sW = 120;
