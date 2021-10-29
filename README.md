@@ -1,2 +1,3 @@
 # T-Rex game
-![picture1](https://user-images.githubusercontent.com/70001950/139037365-45ab4131-8ea5-4730-966b-f88914bcac2c.png)
+
+![Animation](https://user-images.githubusercontent.com/70001950/139416983-45f64d9b-08ba-4005-8f8a-29318ffdada9.gif)
