@@ -105,8 +105,8 @@ export class Game implements _game {
           if (
             event.offsetX > this.canvas.width / 2 - 50 &&
             event.offsetX < this.canvas.width / 2 + 50 &&
-            event.offsetY > this.canvas.height / 2 - 50 &&
-            event.offsetY < this.canvas.height / 2 + 50
+            event.offsetY > this.canvas.height / 2 - 100 &&
+            event.offsetY < this.canvas.height / 2
           ) {
             this.gameStatus = play;
           }
@@ -118,8 +118,8 @@ export class Game implements _game {
           if (
             event.offsetX > this.canvas.width / 2 - 35 &&
             event.offsetX < this.canvas.width / 2 + 35 &&
-            event.offsetY > this.canvas.height / 2 - 30 &&
-            event.offsetY < this.canvas.height / 2 + 30
+            event.offsetY > 120 &&
+            event.offsetY < 180
           )
             this.gameStatus = start;
 
@@ -150,12 +150,12 @@ export class Game implements _game {
     });
   }
   draw() {
+    //draw Grounds
+    this.arrGround.forEach((_e) => _e.draw(this.ctx));
     if (this.gameStatus === start) {
       this.game_start.draw(this.ctx, this.canvas);
     } else {
-      //draw arrGround
-      this.arrGround.forEach((_e) => _e.draw(this.ctx));
-      //draw arrCloud
+      //draw Clouds
       this.arrCloud.forEach((_e) => _e.draw(this.ctx));
       //draw Score
       this.score.draw(this.ctx);
@@ -166,7 +166,12 @@ export class Game implements _game {
       this.arrObstacles.forEach((_e) => _e.draw(this.ctx));
 
       if (this.gameStatus === end) {
-        this.game_over.draw(this.ctx, this.canvas);
+        this.game_over.draw(
+          this.ctx,
+          this.canvas,
+          this.maxScore.value,
+          this.score.value
+        );
       }
     }
   }
@@ -175,6 +180,17 @@ export class Game implements _game {
       let delta = this.timeCurrent - this.timePrev;
       this.timePrev = this.timeCurrent;
       this.timeCurrent = Date.now();
+      if (this.score.value > 300) {
+        this.vX = -7;
+      } else {
+        if (this.score.value > 200) {
+          this.vX = -6;
+        } else {
+          if (this.score.value > 100) {
+            this.vX = -5;
+          }
+        }
+      }
       //update array Ground
       this.updateArrGround();
       //update array cloud
@@ -194,7 +210,7 @@ export class Game implements _game {
     //update array cloud
     let numberCloud = this.arrCloud.length;
     if (numberCloud) {
-      this.arrCloud.forEach((_e) => (_e.cX += _e.vX));
+      this.arrCloud.forEach((_e) => (_e.cX += this.vX));
       if (
         numberCloud <= this.max_cloud &&
         this.canvas.width - this.arrCloud[numberCloud - 1].cX >
@@ -215,7 +231,7 @@ export class Game implements _game {
     let lengthArrObstacles = this.arrObstacles.length;
     if (lengthArrObstacles) {
       this.arrObstacles.forEach((_e) => {
-        _e.cX += _e.vX;
+        _e.cX += this.vX;
         if (_e.type === 3) _e.update();
         // measure distance player with obstacles.
       });
@@ -239,7 +255,7 @@ export class Game implements _game {
   }
 
   updateArrGround() {
-    this.arrGround.forEach((_e) => (_e.cX += _e.vX));
+    this.arrGround.forEach((_e) => (_e.cX += this.vX));
     if (this.arrGround[0].cX <= -canvasWidth * 2) {
       this.arrGround.splice(0, 1);
       let ground = new Ground(
