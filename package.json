@@ -1,7 +1,7 @@
 {
   "name": "game",
   "version": "1.0.0",
-  "description": "",
+  "description": "![Animation](https://user-images.githubusercontent.com/70001950/139416983-45f64d9b-08ba-4005-8f8a-29318ffdada9.gif)",
   "main": "index.js",
   "scripts": {
     "server": "webpack serve --mode development",
@@ -23,5 +23,13 @@
     "webpack": "^5.59.1",
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.3.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shjn3/gamesundata.git"
+  },
+  "bugs": {
+    "url": "https://github.com/shjn3/gamesundata/issues"
+  },
+  "homepage": "https://github.com/shjn3/gamesundata#readme"
 }

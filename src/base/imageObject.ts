@@ -1,4 +1,4 @@
-import { _Object } from "./Object";
+import { _Object } from "./_Object";
 
 interface _imageObject {
   imageSprites: HTMLImageElement; // Image is used in canvas

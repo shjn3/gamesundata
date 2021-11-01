@@ -17,7 +17,7 @@ import { Player } from "./Player/Player";
 import { Score } from "./scenes/Score";
 import { maxScore } from "./scenes/maxScore";
 import { Cloud } from "./outside/Cloud";
-import { Obstacles } from "./obstacles/obstacles";
+import { Obstacles } from "./obstacles/Obstacles";
 import { gameOver } from "./scenes/gameOver";
 
 interface _game {
