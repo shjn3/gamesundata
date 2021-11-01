@@ -290,6 +290,7 @@ export class Game implements _game {
   }
   reset() {
     this.score.value = 0;
+    this.vX = -4;
     this.dino.reset();
     this.arrCloud = [];
     this.arrObstacles = [];
