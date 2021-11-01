@@ -49,7 +49,7 @@ interface _game {
   addNewCloud(): void;
   updateObstacles(): void;
 
-  distanceMeasure(a: Obstacles): void; // measure distance player with obstacles
+  collisionDetection(a: Obstacles): void; // measure distance player with obstacles
   reset(): void; // reset when game over.
 }
 
@@ -244,7 +244,7 @@ export class Game implements _game {
       ) {
         this.addNewObstacles();
       }
-      this.distanceMeasure(this.arrObstacles[0]);
+      this.collisionDetection(this.arrObstacles[0]);
       if (this.arrObstacles[0].cX + this.arrObstacles[0].cW < 0) {
         this.arrObstacles.shift();
       }
@@ -278,7 +278,7 @@ export class Game implements _game {
       this.arrGround.push(ground);
     }
   }
-  distanceMeasure(_obstacles: Obstacles) {
+  collisionDetection(_obstacles: Obstacles) {
     if (
       this.dino.cX < _obstacles.cX + _obstacles.cW &&
       this.dino.cX + this.dino.cW > _obstacles.cX &&
