@@ -25,7 +25,7 @@ export class Obstacles extends imageObject {
     this.cX = canvas.width;
     this.vX = vX;
     this.arrTypePterodactyl = {
-      cY: 290,
+      cY: [290, 270, 320],
       cW: 50,
       cH: 30,
       gap: 300,
@@ -107,7 +107,8 @@ export class Obstacles extends imageObject {
         this.sH = this.arrTypeCactus.small.boxes[randomCactusSmallBox].height;
         break;
       case pterodactyl:
-        this.cY = this.arrTypePterodactyl.cY;
+        let randomHeigh = getRandomNumber(0, 2);
+        this.cY = this.arrTypePterodactyl.cY[randomHeigh];
         this.cW = this.arrTypePterodactyl.cW;
         this.cH = this.arrTypePterodactyl.cH;
         this.gap = this.arrTypePterodactyl.gap;
@@ -115,6 +116,7 @@ export class Obstacles extends imageObject {
         this.sY = this.arrTypePterodactyl.boxes[0].y;
         this.sW = this.arrTypePterodactyl.boxes[0].width;
         this.sH = this.arrTypePterodactyl.boxes[0].height;
+        console.log(this.vX);
         break;
     }
   }
@@ -135,6 +137,7 @@ export class Obstacles extends imageObject {
   update() {
     if (this.type === pterodactyl) {
       this.timer++;
+      this.cX += -2;
       if (this.timer > 15) {
         this.sX =
           this.arrTypePterodactyl.boxes[0].x === this.sX

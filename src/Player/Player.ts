@@ -15,7 +15,7 @@ interface _player {
   timer: number; // count time for crate animation
   jumpVelocity: number; // velocity when player jump
   gravity: number; // gravity use for player when player jump
-  draw(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement): void; //draw object on the canvas
+  draw(ctx: CanvasRenderingContext2D): void; //draw object on the canvas
   setPositionDuck(): void; //set position, size on canvas, source Image when player duck
   setPositionOther(): void; //set position, size on canvas, source Image when player run, jump
   update(): void; // update property for objects
@@ -44,7 +44,7 @@ export class Player extends imageObject implements _player {
     this.sH = 110;
 
     this.status = status_run;
-    this.msPerSecond = { run: 10, jump: 1000 / 60, duck: 1000 / 60 };
+    this.msPerSecond = { run: 10, jump: 1000 / 60, duck: 10 };
     this.frames_run = [1511, 1599];
     this.frames_jump = [1335];
     this.frames_duck = [1862, 1982];
@@ -52,7 +52,7 @@ export class Player extends imageObject implements _player {
     this.jumpVelocity = -15;
     this.gravity = 0.5;
   }
-  draw(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
+  draw(ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.drawImage(
       this.imageSprites,

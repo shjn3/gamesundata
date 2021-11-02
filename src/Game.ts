@@ -161,7 +161,7 @@ export class Game implements _game {
       this.score.draw(this.ctx);
       this.maxScore.draw(this.ctx);
       //draw Dino
-      this.dino.draw(this.ctx, this.canvas);
+      this.dino.draw(this.ctx);
       //draw obstacles
       this.arrObstacles.forEach((_e) => _e.draw(this.ctx));
 
@@ -232,6 +232,7 @@ export class Game implements _game {
     if (lengthArrObstacles) {
       this.arrObstacles.forEach((_e) => {
         _e.cX += this.vX;
+
         if (_e.type === 3) _e.update();
         // measure distance player with obstacles.
       });

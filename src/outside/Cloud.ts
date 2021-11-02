@@ -19,10 +19,12 @@ export class Cloud extends imageObject implements _cloud {
     this.sH = 30;
     this.cX = cX;
     this.cY = getRandomNumber(30, 270);
-    this.cW = 200;
-    this.cH = 60;
-    this.vX = -1;
-    this.gap = getRandomNumber(100, 400);
+    let randomSizeWidth = getRandomNumber(80, 200);
+    this.cW = randomSizeWidth;
+    this.cH = randomSizeWidth / 3.2;
+    let randomVelocity = getRandomNumber(1, 3);
+    this.vX = -1 * randomVelocity;
+    this.gap = getRandomNumber(randomSizeWidth - 20, 200);
   }
   draw(ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
