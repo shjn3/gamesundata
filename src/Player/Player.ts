@@ -87,7 +87,6 @@ export class Player extends imageObject implements _player {
     //check status run
     if (this.status === status_run) {
       if (this.timer >= this.msPerSecond.run) {
-        this.setPositionOther();
         this.sX =
           this.sX === this.frames_run[0]
             ? this.frames_run[1]
@@ -121,5 +120,6 @@ export class Player extends imageObject implements _player {
   reset() {
     this.setPositionOther();
     this.status = status_run;
+    this.jumpVelocity = -15;
   }
 }
