@@ -15,6 +15,8 @@ interface _player {
   timer: number; // count time for crate animation
   jumpVelocity: number; // velocity when player jump
   gravity: number; // gravity use for player when player jump
+  isJump: boolean;
+  isDuck: boolean;
   draw(ctx: CanvasRenderingContext2D): void; //draw object on the canvas
   setPositionDuck(): void; //set position, size on canvas, source Image when player duck
   setPositionOther(): void; //set position, size on canvas, source Image when player run, jump
@@ -30,10 +32,14 @@ export class Player extends imageObject implements _player {
   timer: number;
   jumpVelocity: number;
   gravity: number;
+  isJump: boolean;
+  isDuck: boolean;
+
   constructor() {
     super();
     Object.setPrototypeOf(this, Player.prototype);
-
+    this.isJump = false;
+    this.isDuck = false;
     this.cX = 15;
     this.cY = 315;
     this.cW = 60;
@@ -86,6 +92,7 @@ export class Player extends imageObject implements _player {
     this.timer++;
     //check status run
     if (this.status === status_run) {
+      this.reset();
       if (this.timer >= this.msPerSecond.run) {
         this.sX =
           this.sX === this.frames_run[0]
@@ -95,25 +102,34 @@ export class Player extends imageObject implements _player {
       }
     }
     //check status duck
-    if (this.status === status_duck) {
-      if (this.timer >= this.msPerSecond.duck) {
-        this.setPositionDuck();
-        this.sX =
-          this.sX === this.frames_duck[0]
-            ? this.frames_duck[1]
-            : this.frames_duck[0];
-        this.timer = 0;
+    else {
+      if (this.status === status_duck) {
+        if (!this.isDuck) {
+          this.setPositionDuck();
+          this.sX = this.frames_duck[0];
+        } else {
+          if (this.timer >= this.msPerSecond.duck) {
+            this.sX =
+              this.sX === this.frames_duck[0]
+                ? this.frames_duck[1]
+                : this.frames_duck[0];
+            this.timer = 0;
+          }
+        }
       }
-    }
-    //check status jump
-    if (this.status === status_jump) {
-      this.sX = this.frames_jump[0];
-      this.jumpVelocity += this.gravity * 1.1;
-      this.cY += this.jumpVelocity;
-      if (this.cY > 315) {
-        this.cY = 315;
-        this.status = status_run;
-        this.jumpVelocity = -15;
+      //check status jump
+      else {
+        if (this.status === status_jump) {
+          this.sX = this.frames_jump[0];
+          this.jumpVelocity += this.gravity * 1.1;
+          this.cY += this.jumpVelocity;
+
+          if (this.cY > 315) {
+            this.cY = 315;
+            this.status = status_run;
+            this.jumpVelocity = -15;
+          }
+        }
       }
     }
   }

@@ -122,7 +122,6 @@ export class Game implements _game {
             event.offsetY < 180
           )
             this.gameStatus = start;
-
           break;
       }
     });
