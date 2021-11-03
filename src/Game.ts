@@ -128,13 +128,16 @@ export class Game implements _game {
     });
     window.addEventListener("keydown", (event) => {
       if (this.gameStatus === play) {
+        console.log(event.key);
         switch (event.key) {
           case ArrowUp:
           case Space:
             this.dino.status = status_jump;
             break;
           case ArrowDown:
-            this.dino.status = status_duck;
+            if (this.dino.status === status_run) {
+              this.dino.status = status_duck;
+            }
             break;
         }
       }
@@ -143,7 +146,9 @@ export class Game implements _game {
       if (this.gameStatus === play) {
         switch (event.key) {
           case ArrowDown:
-            this.dino.status = status_run;
+            if (this.dino.status === status_duck) {
+              this.dino.status = status_run;
+            }
             break;
         }
       }

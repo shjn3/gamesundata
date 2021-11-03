@@ -116,7 +116,7 @@ export class Obstacles extends imageObject {
         this.sY = this.arrTypePterodactyl.boxes[0].y;
         this.sW = this.arrTypePterodactyl.boxes[0].width;
         this.sH = this.arrTypePterodactyl.boxes[0].height;
-        console.log(this.vX);
+
         break;
     }
   }
